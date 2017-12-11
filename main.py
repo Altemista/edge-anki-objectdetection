@@ -11,6 +11,7 @@ def main():
     while(True):
         # Capture frame-by-frame
         ret, frame = video_capture.read()
+        #frame = cv2.imread("anki_object_detection/images/lanes2.jpg")
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -18,15 +19,15 @@ def main():
         cube = cube_detector.detect(frame)
         max_left_lane, max_right_lane = lane_detector.detect(frame)
 
-        cv2.rectangle(frame, (cube.x, cube.y), (cube.width, cube.height), (255, 0, 0), 2)
+        cv2.rectangle(frame, (cube.x, cube.y), (cube.x+cube.width, cube.y+cube.height), (255, 0, 0), 2)
         if max_left_lane is not None and max_right_lane is not None:
             # print lanes
-            cv2.line(image, (max_left_lane.x1, max_left_lane.y1), (max_left_lane.x2, max_left_lane.y2), (255, 0, 0), 5)
-            cv2.line(image, (max_right_lane.x1, max_right_lane.y1), (max_right_lane.x2, max_right_lane.y2), (255, 0, 0), 5)
+            cv2.line(frame, (max_left_lane.x1, max_left_lane.y1), (max_left_lane.x2, max_left_lane.y2), (255, 0, 0), 5)
+            cv2.line(frame, (max_right_lane.x1, max_right_lane.y1), (max_right_lane.x2, max_right_lane.y2), (255, 0, 0), 5)
 
         cv2.namedWindow('test', cv2.WINDOW_NORMAL)
         cv2.imshow('test', frame)
-        cv2.waitKey(10)
+        cv2.waitKey(50)
 
     # When everything done, release the capture
     video_capture.release()

@@ -1,5 +1,6 @@
 import cv2 as cv2
 import numpy as np
+import math
 from anki_object_detection.line import Line
 
 
@@ -27,6 +28,9 @@ class LaneDetector():
             return None, None
 
         interpolated_lines = self._interpolate_vetical_lines(lines, 10)
+
+        self._plot_lines(interpolated_lines, mask_yellow)
+
         return self._get_lanes(interpolated_lines)
 
     def _unit_vector(self, vector):
@@ -38,7 +42,19 @@ class LaneDetector():
         """
         v1_u = self._unit_vector(v1)
         v2_u = self._unit_vector((1, 0))
-        return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+
+        angle = np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+        #print(angle * (180/math.pi))
+
+        #image = np.zeros((500,500,3), np.uint8)
+        #cv2.line(image, (250, 500), (int(250+v1_u[0]*250), int(500-v1_u[1]*500)), (255, 0, 0), 5)
+        #cv2.line(image, (250, 500), (int(250+v2_u[0]*250), int(500-v2_u[1]*500)), (255, 0, 0), 5)
+
+        #cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+        #cv2.imshow('test', image)
+        #cv2.waitKey(0)
+
+        return angle * (180/math.pi)
 
     def _interpolate_vetical_lines(self, lines, threshold=10):
         """ Returns all the aggregated vertical lines that point to the same direction
@@ -57,10 +73,11 @@ class LaneDetector():
                     x1, x2, y1, y2 = self._swap_line_orientation(x1, x2, y1, y2)
 
                 # calculate the angle
-                angle = int(self._calc_angle((x2 - x1, y2 - y1)) * 100)
+                angle = int(self._calc_angle((x2 - x1, y2 - y1)))
 
                 # ignore lines that do not point vertically
-                if angle > 80 and angle < 200:
+                if angle < 110 and angle > 80:
+                    print(angle)
                     closest_line = None
                     for keyAngle in interpolated_lines:
                         if abs(keyAngle-angle) < threshold:
@@ -129,3 +146,11 @@ class LaneDetector():
                     max_right_lane = line
 
         return max_left_lane, max_right_lane
+
+    def _plot_lines(self, lines, image):
+        for line in lines.values():
+            cv2.line(image, (line.x1, line.y1), (line.x2, line.y2), (255, 0, 0), 5)
+
+        #cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+        #cv2.imshow('test', image)
+        #cv2.waitKey(0)
