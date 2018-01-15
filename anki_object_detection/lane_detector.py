@@ -4,7 +4,7 @@ import math
 from anki_object_detection.line import Line
 
 
-class LaneDetector():
+class LaneDetector:
     LOWER_ORANGE = np.array([10, 150, 150], dtype="uint8")
     UPPER_ORANGE = np.array([20, 255, 255], dtype="uint8")
 
