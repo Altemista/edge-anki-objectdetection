@@ -1,0 +1,6 @@
+{
+	"maxLeftLane": { "x1": 542, "x2": 332, "y1": 472, "y2": 898 },
+	"maxRightLane": { "x1": 789, "x2": 906, "y1": 470, "y2": 880 },
+	"maxHorizontalUpperLane": { "x1": 260, "x2": 1062, "y1": 579, "y2": 535 },
+	"maxHorizontalLowerLane": { "x1": 132, "x2": 1163, "y1": 718, "y2": 653 }
+}
