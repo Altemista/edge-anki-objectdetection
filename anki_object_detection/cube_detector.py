@@ -42,7 +42,7 @@ class CubeDetector:
 
         x, y, w, h = cv2.boundingRect(biggest_contour)
 
-       #cv2.drawContours(frame, contours, -1, (255, 255, 0), 3)
+        #cv2.drawContours(frame, contours, -1, (255, 255, 0), 3)
         #cv2.rectangle(frame, (x,y), (x+w, y+h), (255, 0, 0), 3)
         #cv2.namedWindow('test', cv2.WINDOW_NORMAL)
         #cv2.imshow('test', frame)

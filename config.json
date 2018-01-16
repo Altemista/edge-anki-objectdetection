@@ -1,6 +1,7 @@
 {
-	"maxLeftLane": { "x1": 542, "x2": 332, "y1": 472, "y2": 898 },
-	"maxRightLane": { "x1": 789, "x2": 906, "y1": 470, "y2": 880 },
-	"maxHorizontalUpperLane": { "x1": 260, "x2": 1062, "y1": 579, "y2": 535 },
-	"maxHorizontalLowerLane": { "x1": 132, "x2": 1163, "y1": 718, "y2": 653 }
+    "cameraDeviceId": 1,
+	"maxLeftLane": { "x1": 475, "x2": 486, "y1": 105, "y2": 911 },
+	"maxRightLane": { "x1": 766, "x2": 778, "y1": 100, "y2": 911 },
+	"maxHorizontalUpperLane": { "x1": 245, "x2": 1003, "y1": 355, "y2": 348 },
+	"maxHorizontalLowerLane": { "x1": 247, "x2": 1013, "y1": 666, "y2": 654 }
 }

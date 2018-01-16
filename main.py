@@ -36,7 +36,7 @@ def main():
     max_horizontal_lower_lane = Line(config['maxHorizontalLowerLane']['x1'], config['maxHorizontalLowerLane']['x2'], config['maxHorizontalLowerLane']['y1'],
                                      config['maxHorizontalLowerLane']['y2'])
 
-    ankiCamera = AnkiCamera()
+    ankiCamera = AnkiCamera(config["cameraDeviceId"])
     try:
         ankiCamera.run(max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane)
     except KeyboardInterrupt:

@@ -10,7 +10,7 @@ import os
 
 
 class AnkiCamera(object):
-    def __init__(self):
+    def __init__(self, cameraDeviceId):
         # init the websocket
         self.httpWebsocket = os.environ.get('HTTP_WEBSOCKET')
 
@@ -18,14 +18,20 @@ class AnkiCamera(object):
             print('Using 127.0.0.1 as default websocket server.')
             self.httpWebsocket='127.0.0.1'
 
+        self.cameraDeviceId = cameraDeviceId
+
         self.client = AnkiWebSocketClient("ws://" + self.httpWebsocket + ":8003/status")
-        self.client.connect()
+        try:
+            self.client.connect()
+        except Exception:
+            print("Could not connect to websocket");
 
     def run(self, max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane):
         try:
             print("Running")
 
-            video_capture = cv2.VideoCapture(0)
+            video_capture = cv2.VideoCapture(self.cameraDeviceId)
+
             cube_detector = CubeDetector()
             lane_detector = LaneDetector()
 
@@ -57,6 +63,9 @@ class AnkiCamera(object):
                         print("INFO: Sending message " + positionMessage)
                         self.client.send(positionMessage)
                         last_vertical_lane = vertical_lane
+
+                label = "Lane hor: " + str(last_horizontal_lane) + ", lane vert: " + str(last_vertical_lane)
+                cv2.putText(frame, label, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
 
                 cv2.namedWindow('test', cv2.WINDOW_NORMAL)
                 cv2.imshow('test', frame)
