@@ -41,10 +41,7 @@ def main():
     upper_color_range = np.array([config['upperColorRange']['hue'], config['upperColorRange']['saturation'], config['upperColorRange']['luminance']])
 
     ankiCamera = AnkiCamera(config["cameraDeviceId"])
-    try:
-        ankiCamera.run(max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane, lower_color_range, upper_color_range)
-    except KeyboardInterrupt:
-        ankiCamera.terminate()
+    ankiCamera.run(max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane, lower_color_range, upper_color_range)
 
 if __name__ == "__main__":
     main()
