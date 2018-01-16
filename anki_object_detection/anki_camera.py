@@ -26,13 +26,17 @@ class AnkiCamera(object):
         except Exception:
             print("Could not connect to websocket");
 
-    def run(self, max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane):
+    def run(self, max_left_lane, max_right_lane,
+            max_horizontal_upper_lane,
+            max_horizontal_lower_lane,
+            lower_color_range,
+            upper_color_range):
         try:
             print("Running")
 
             video_capture = cv2.VideoCapture(self.cameraDeviceId)
 
-            cube_detector = CubeDetector()
+            cube_detector = CubeDetector(lower_color_range, upper_color_range)
             lane_detector = LaneDetector()
 
             last_horizontal_lane = None

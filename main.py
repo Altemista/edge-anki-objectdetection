@@ -2,6 +2,7 @@ from anki_object_detection.anki_camera import AnkiCamera
 from anki_object_detection.line import Line
 import argparse
 import json
+import numpy as np
 
 
 
@@ -36,9 +37,12 @@ def main():
     max_horizontal_lower_lane = Line(config['maxHorizontalLowerLane']['x1'], config['maxHorizontalLowerLane']['x2'], config['maxHorizontalLowerLane']['y1'],
                                      config['maxHorizontalLowerLane']['y2'])
 
+    lower_color_range = np.array([config['lowerColorRange']['hue'], config['lowerColorRange']['saturation'], config['lowerColorRange']['luminance']])
+    upper_color_range = np.array([config['upperColorRange']['hue'], config['upperColorRange']['saturation'], config['upperColorRange']['luminance']])
+
     ankiCamera = AnkiCamera(config["cameraDeviceId"])
     try:
-        ankiCamera.run(max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane)
+        ankiCamera.run(max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane, lower_color_range, upper_color_range)
     except KeyboardInterrupt:
         ankiCamera.terminate()
 

@@ -9,8 +9,10 @@ class CubeDetector:
     LOWER_BLUE = np.array([100, 70, 120])
     UPPER_BLUE = np.array([125, 178, 255])
 
-    def __init__(self):
+    def __init__(self, lower_color_range=LOWER_BLUE, upper_color_range=UPPER_BLUE):
         super()
+        self.lower_color_range = lower_color_range
+        self.upper_color_range = upper_color_range
 
     def detect(self, frame):
         image_height, image_width, channels = frame.shape
@@ -19,7 +21,7 @@ class CubeDetector:
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HLS)
 
         # Threshold the HSV image to get only blue colors
-        mask = cv2.inRange(hsv, self.LOWER_BLUE, self.UPPER_BLUE)
+        mask = cv2.inRange(hsv, self.lower_color_range, self.upper_color_range)
         im2, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         biggest_contour_size = 0

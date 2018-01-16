@@ -3,5 +3,7 @@
 	"maxLeftLane": { "x1": 475, "x2": 486, "y1": 105, "y2": 911 },
 	"maxRightLane": { "x1": 766, "x2": 778, "y1": 100, "y2": 911 },
 	"maxHorizontalUpperLane": { "x1": 245, "x2": 1003, "y1": 355, "y2": 348 },
-	"maxHorizontalLowerLane": { "x1": 247, "x2": 1013, "y1": 666, "y2": 654 }
+	"maxHorizontalLowerLane": { "x1": 247, "x2": 1013, "y1": 666, "y2": 654 },
+	"lowerColorRange":  { "hue": 100, "saturation": 70, "luminance": 120 },
+	"upperColorRange": { "hue": 125, "saturation": 178, "luminance": 255}
 }
