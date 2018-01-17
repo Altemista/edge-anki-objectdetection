@@ -57,15 +57,24 @@ class AnkiCamera(object):
                                                                                       max_horizontal_upper_lane, max_horizontal_lower_lane)
 
                     if horizontal_lane != last_horizontal_lane:
-                        positionMessage = json.dumps(PositionUpdateMessage(-1, horizontal_lane).__dict__)
+                        #positionMessage = json.dumps(PositionUpdateMessage(-1, horizontal_lane).__dict__)
+                        positionMessage = PositionUpdateMessage(-1, horizontal_lane).toCsv()
                         print("INFO: Sending message " + positionMessage)
-                        self.client.send(positionMessage)
+                        try:
+                            print("INFO: Sending message " + positionMessage)
+                            self.client.send(positionMessage)
+                        except Exception:
+                            print("ERROR: Message could not be sent.")
                         last_horizontal_lane = horizontal_lane
 
                     if vertical_lane != last_vertical_lane:
-                        positionMessage = json.dumps(PositionUpdateMessage(-2, vertical_lane).__dict__)
-                        print("INFO: Sending message " + positionMessage)
-                        self.client.send(positionMessage)
+                        #positionMessage = json.dumps(PositionUpdateMessage(-2, vertical_lane).__dict__)
+                        positionMessage = PositionUpdateMessage(-2, vertical_lane).toCsv()
+                        try:
+                            print("INFO: Sending message " + positionMessage)
+                            self.client.send(positionMessage)
+                        except Exception:
+                            print("ERROR: Message could not be sent.")
                         last_vertical_lane = vertical_lane
 
                 label = "Lane hor: " + str(last_horizontal_lane) + ", lane vert: " + str(last_vertical_lane)

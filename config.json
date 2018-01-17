@@ -1,9 +1,9 @@
 {
     "cameraDeviceId": 1,
-	"maxLeftLane": { "x1": 455, "x2": 460, "y1": 47, "y2": 1004 },
-	"maxRightLane": { "x1": 794, "x2": 808, "y1": 42, "y2": 1007 },
-	"maxHorizontalUpperLane": { "x1": 184, "x2": 1083, "y1": 347, "y2": 336 },
-	"maxHorizontalLowerLane": { "x1": 178, "x2": 1091, "y1": 714, "y2": 706 },
+	"maxLeftLane": { "x1": 495, "x2": 466, "y1": 20, "y2": 975 },
+	"maxRightLane": { "x1": 833, "x2": 815, "y1": 33, "y2": 987 },
+	"maxHorizontalUpperLane": { "x1": 206, "x2": 1100, "y1": 300, "y2": 336 },
+	"maxHorizontalLowerLane": { "x1": 191, "x2": 1091, "y1": 667, "y2": 706 },
 	"lowerColorRange":  { "hue": 30, "saturation": 50, "luminance": 50 },
 	"upperColorRange": { "hue": 70, "saturation": 200, "luminance": 255}
 }
