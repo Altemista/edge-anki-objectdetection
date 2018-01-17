@@ -7,6 +7,8 @@ from anki_object_detection.position_update_message import PositionUpdateMessage
 from anki_object_detection.anki_websocket_client import AnkiWebSocketClient
 import json
 import os
+from threading import Timer
+import sys
 
 
 class AnkiCamera(object):
@@ -20,11 +22,26 @@ class AnkiCamera(object):
 
         self.cameraDeviceId = cameraDeviceId
 
-        self.client = AnkiWebSocketClient("ws://" + self.httpWebsocket + ":8003/status")
+        self.timer_started = False
+        self.connect()
+
+    def start_connection_timer(self):
+        if not self.timer_started:
+            self.connectionTimer = Timer(5.0, self.connect)
+            self.timer_started = True
+            self.connectionTimer.start()
+
+    def connect(self):
         try:
+            self.client = AnkiWebSocketClient("ws://" + self.httpWebsocket + ":8003/status")
             self.client.connect()
+            self.connectionTimer.cancel()
+            self.timer_started = False
+            print("Connected to websocket")
         except Exception:
-            print("Could not connect to websocket");
+            self.timer_started = False
+            self.start_connection_timer()
+            print("Could not connect to websocket")
 
     def run(self, max_left_lane, max_right_lane,
             max_horizontal_upper_lane,
@@ -42,9 +59,13 @@ class AnkiCamera(object):
             last_horizontal_lane = None
             last_vertical_lane = None
 
+            count_failed_frames = 0
+
             while(True):
                 # Capture frame-by-frame
                 ret, frame = video_capture.read()
+                count_failed_frames += 1
+
                 #frame = cv2.imread("anki_object_detection/images/cube_left_lane_1.jpg")
 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -66,6 +87,9 @@ class AnkiCamera(object):
                                 self.client.send(positionMessage)
                             except Exception:
                                 print("ERROR: Message could not be sent.")
+                                self.start_connection_timer()
+
+
                             last_horizontal_lane = horizontal_lane
 
                         if vertical_lane != last_vertical_lane:
@@ -75,7 +99,9 @@ class AnkiCamera(object):
                                 print("INFO: Sending message " + positionMessage)
                                 self.client.send(positionMessage)
                             except Exception:
+                                self.start_connection_timer()
                                 print("ERROR: Message could not be sent.")
+
                             last_vertical_lane = vertical_lane
 
                     label = "Lane hor: " + str(last_horizontal_lane) + ", lane vert: " + str(last_vertical_lane)
@@ -84,6 +110,11 @@ class AnkiCamera(object):
                     cv2.namedWindow('test', cv2.WINDOW_NORMAL)
                     cv2.imshow('test', frame)
                     cv2.waitKey(10)
+                else:
+                    # If we could not initialize the camera after 100 frames, simply exit
+                    count_failed_frames += 1
+                    if count_failed_frames > 100:
+                        raise EnvironmentError("Could not init camera")
 
             # When everything done, release the capture
             video_capture.release()
@@ -98,3 +129,4 @@ class AnkiCamera(object):
             self.client.close()
             self.client._th.join()
             self.client = None
+        sys.exit()
