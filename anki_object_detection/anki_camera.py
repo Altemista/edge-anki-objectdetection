@@ -50,39 +50,40 @@ class AnkiCamera(object):
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
 
-                cube = cube_detector.detect(frame)
+                if frame is not None:
+                    cube = cube_detector.detect(frame)
 
-                if cube.x != 0 and cube.y != 0:
-                    horizontal_lane, vertical_lane = LaneCalculator.get_lane_for_cube(frame, cube, max_left_lane, max_right_lane,
-                                                                                      max_horizontal_upper_lane, max_horizontal_lower_lane)
+                    if cube.x != 0 and cube.y != 0:
+                        horizontal_lane, vertical_lane = LaneCalculator.get_lane_for_cube(frame, cube, max_left_lane, max_right_lane,
+                                                                                          max_horizontal_upper_lane, max_horizontal_lower_lane)
 
-                    if horizontal_lane != last_horizontal_lane:
-                        #positionMessage = json.dumps(PositionUpdateMessage(-1, horizontal_lane).__dict__)
-                        positionMessage = PositionUpdateMessage(-1, horizontal_lane).toCsv()
-                        print("INFO: Sending message " + positionMessage)
-                        try:
+                        if horizontal_lane != last_horizontal_lane:
+                            #positionMessage = json.dumps(PositionUpdateMessage(-1, horizontal_lane).__dict__)
+                            positionMessage = PositionUpdateMessage(-1, horizontal_lane).toCsv()
                             print("INFO: Sending message " + positionMessage)
-                            self.client.send(positionMessage)
-                        except Exception:
-                            print("ERROR: Message could not be sent.")
-                        last_horizontal_lane = horizontal_lane
+                            try:
+                                print("INFO: Sending message " + positionMessage)
+                                self.client.send(positionMessage)
+                            except Exception:
+                                print("ERROR: Message could not be sent.")
+                            last_horizontal_lane = horizontal_lane
 
-                    if vertical_lane != last_vertical_lane:
-                        #positionMessage = json.dumps(PositionUpdateMessage(-2, vertical_lane).__dict__)
-                        positionMessage = PositionUpdateMessage(-2, vertical_lane).toCsv()
-                        try:
-                            print("INFO: Sending message " + positionMessage)
-                            self.client.send(positionMessage)
-                        except Exception:
-                            print("ERROR: Message could not be sent.")
-                        last_vertical_lane = vertical_lane
+                        if vertical_lane != last_vertical_lane:
+                            #positionMessage = json.dumps(PositionUpdateMessage(-2, vertical_lane).__dict__)
+                            positionMessage = PositionUpdateMessage(-2, vertical_lane).toCsv()
+                            try:
+                                print("INFO: Sending message " + positionMessage)
+                                self.client.send(positionMessage)
+                            except Exception:
+                                print("ERROR: Message could not be sent.")
+                            last_vertical_lane = vertical_lane
 
-                label = "Lane hor: " + str(last_horizontal_lane) + ", lane vert: " + str(last_vertical_lane)
-                cv2.putText(frame, label, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
+                    label = "Lane hor: " + str(last_horizontal_lane) + ", lane vert: " + str(last_vertical_lane)
+                    cv2.putText(frame, label, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
 
-                cv2.namedWindow('test', cv2.WINDOW_NORMAL)
-                cv2.imshow('test', frame)
-                cv2.waitKey(10)
+                    cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+                    cv2.imshow('test', frame)
+                    cv2.waitKey(10)
 
             # When everything done, release the capture
             video_capture.release()
