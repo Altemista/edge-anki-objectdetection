@@ -3,10 +3,11 @@ from anki_object_detection.line import Line
 import argparse
 import json
 import numpy as np
-
+import settings
 
 
 def main():
+    settings.init()
 
     parser = argparse.ArgumentParser(description='Detect a blue cube')
     parser.add_argument('configFile', nargs='?',  default='config.json')

@@ -68,23 +68,23 @@ class LaneCalculator:
 
             # vertical upper, horizontal middle (implicit)
             if cube_y < mean_upper_y*0.9:
-                print("DEBUG: Cube in vertical upper, horizontal middle part(not affected)")
+                #print("DEBUG: Cube in vertical upper, horizontal middle part(not affected)")
                 vertical_lane = LaneCalculator._calculate_vertical_lane(max_left_lane.x1, max_right_lane.x1, cube_x, frame)
             # vertical lower, horizontal middle (implicit)
             elif cube_y > mean_lower_y*1.1:
-                print("DEBUG: Cube in vertical lower, horizontal middle part(not affected)")
+                #print("DEBUG: Cube in vertical lower, horizontal middle part(not affected)")
                 vertical_lane = LaneCalculator._calculate_vertical_lane(max_left_lane.x2, max_right_lane.x2, cube_x, frame)
             # vertical middle, horizontal left
             elif cube_x < mean_left_x:
-                print("DEBUG: Cube in vertical middle(not affected), horizontal left part")
+                #print("DEBUG: Cube in vertical middle(not affected), horizontal left part")
                 horizontal_lane = LaneCalculator._calculate_horizontal_lane(max_horizontal_upper_lane.y1, max_horizontal_lower_lane.y1, cube_y, frame)
             # vertical middle, horizontal right
             elif cube_x > mean_right_x:
-                print("DEBUG: Cube in vertical middle(not affected), horizontal right part")
+                #print("DEBUG: Cube in vertical middle(not affected), horizontal right part")
                 horizontal_lane = LaneCalculator._calculate_horizontal_lane(max_horizontal_upper_lane.y2, max_horizontal_lower_lane.y2, cube_y, frame)
             # vertical middle, horizontal middle
             else:
-                print("DEBUG: Cube in vertical middle, horizontal middle part")
+                #print("DEBUG: Cube in vertical middle, horizontal middle part")
                 vertical_lane = LaneCalculator._calculate_vertical_lane(mean_left_x, mean_right_x, cube.x+cube.width/2, frame)
                 horizontal_lane = LaneCalculator._calculate_horizontal_lane(mean_upper_y, mean_lower_y, cube_y, frame)
 

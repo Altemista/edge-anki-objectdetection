@@ -9,6 +9,8 @@ import json
 import os
 from threading import Timer
 import sys
+import settings
+import signal
 
 
 class AnkiCamera(object):
@@ -18,7 +20,9 @@ class AnkiCamera(object):
 
         if self.httpWebsocket is None:
             print('Using 127.0.0.1 as default websocket server.')
-            self.httpWebsocket='127.0.0.1'
+            self.httpWebsocket='127.0.0.1:8003'
+        else:
+            print("Using ", self.httpWebsocket, "as websocket")
 
         self.cameraDeviceId = cameraDeviceId
 
@@ -33,7 +37,7 @@ class AnkiCamera(object):
 
     def connect(self):
         try:
-            self.client = AnkiWebSocketClient("ws://" + self.httpWebsocket + ":8003/status")
+            self.client = AnkiWebSocketClient("ws://" + self.httpWebsocket + "/status")
             self.client.connect()
             self.connectionTimer.cancel()
             self.timer_started = False
@@ -106,10 +110,12 @@ class AnkiCamera(object):
 
                     label = "Lane hor: " + str(last_horizontal_lane) + ", lane vert: " + str(last_vertical_lane)
                     cv2.putText(frame, label, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
+                    print(label)
 
-                    cv2.namedWindow('test', cv2.WINDOW_NORMAL)
-                    cv2.imshow('test', frame)
-                    cv2.waitKey(10)
+                    if settings.enable_debug_images:
+                        cv2.namedWindow('test', cv2.WINDOW_NORMAL)
+                        cv2.imshow('test', frame)
+                        cv2.waitKey(10)
                 else:
                     # If we could not initialize the camera after 100 frames, simply exit
                     count_failed_frames += 1
@@ -124,9 +130,4 @@ class AnkiCamera(object):
 
     def terminate(self):
         print("Terminate")
-
-        if not self.client.terminated:
-            self.client.close()
-            self.client._th.join()
-            self.client = None
-        sys.exit()
+        os.kill(os.getpid(), signal.SIGKILL)
