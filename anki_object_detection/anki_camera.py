@@ -11,41 +11,74 @@ from threading import Timer
 import sys
 import settings
 import signal
+import base64
 
 
 class AnkiCamera(object):
     def __init__(self, cameraDeviceId):
-        # init the websocket
-        self.httpWebsocket = os.environ.get('HTTP_WEBSOCKET')
+        self.adasClient = None
+        self.twinClient = None
 
-        if self.httpWebsocket is None:
-            print('Using 127.0.0.1 as default websocket server.')
-            self.httpWebsocket='127.0.0.1:8003'
+        # init the websocket
+        self.httpAdasWebsocket = os.environ.get('HTTP_WEBSOCKET')
+
+        if self.httpAdasWebsocket is None:
+            print('Using 127.0.0.1:8003 as default websocket adas server.')
+            self.httpAdasWebsocket = '127.0.0.1:8003'
         else:
-            print("Using ", self.httpWebsocket, "as websocket")
+            print("Using ", self.httpAdasWebsocket, "as adas websocket")
+
+
+        self.httpTwinWebsocket = os.environ.get("HTTP_IMAGE_WEBSOCKET")
+        if self.httpTwinWebsocket is None:
+            print('Using 127.0.0.1:8001 as default twin server.')
+            self.httpTwinWebsocket = '127.0.0.1:8001'
+        else:
+            print("Using ", self.httpTwinWebsocket, "as twin websocket")
 
         self.cameraDeviceId = cameraDeviceId
 
-        self.timer_started = False
-        self.connect()
+        self.adas_connect_timer_started = False
+        self.connectAdas()
 
-    def start_connection_timer(self):
-        if not self.timer_started:
-            self.connectionTimer = Timer(5.0, self.connect)
-            self.timer_started = True
-            self.connectionTimer.start()
+        self.twin_connect_timer_started = False
+        self.connectTwin()
 
-    def connect(self):
+    def start_adas_connection_timer(self):
+        if not self.adas_connect_timer_started:
+            self.adasConnectionTimer = Timer(5.0, self.connectAdas)
+            self.adas_connect_timer_started = True
+            self.adasConnectionTimer.start()
+
+    def connectAdas(self):
         try:
-            self.client = AnkiWebSocketClient("ws://" + self.httpWebsocket + "/status")
-            self.client.connect()
-            self.connectionTimer.cancel()
-            self.timer_started = False
-            print("Connected to websocket")
+            self.adasClient = AnkiWebSocketClient("ws://" + self.httpAdasWebsocket + "/status")
+            self.adasClient.connect()
+            self.adasConnectionTimer.cancel()
+            self.adas_connect_timer_started = False
+            print("Connected to adas websocket")
         except Exception:
-            self.timer_started = False
-            self.start_connection_timer()
-            print("Could not connect to websocket")
+            self.adas_connect_timer_started = False
+            self.start_adas_connection_timer()
+            print("Could not connect to adas websocket")
+
+    def start_twin_connection_timer(self):
+        if not self.twin_connect_timer_started:
+            self.twinConnectionTimer = Timer(5.0, self.connectTwin)
+            self.twin_connect_timer_started = True
+            self.twinConnectionTimer.start()
+
+    def connectTwin(self):
+        try:
+            self.twinClient = AnkiWebSocketClient("ws://" + self.httpTwinWebsocket + "/image")
+            self.twinClient.connect()
+            self.twinConnectionTimer.cancel()
+            self.twin_connect_timer_started = False
+            print("Connected to twin websocket")
+        except Exception:
+            self.twin_connect_timer_started = False
+            self.start_twin_connection_timer()
+            print("Could not connect to twin websocket")
 
     def run(self, max_left_lane, max_right_lane,
             max_horizontal_upper_lane,
@@ -88,10 +121,10 @@ class AnkiCamera(object):
                             print("INFO: Sending message " + positionMessage)
                             try:
                                 print("INFO: Sending message " + positionMessage)
-                                self.client.send(positionMessage)
+                                self.adasClient.send(positionMessage)
                             except Exception:
                                 print("ERROR: Message could not be sent.")
-                                self.start_connection_timer()
+                                self.start_adas_connection_timer()
 
 
                             last_horizontal_lane = horizontal_lane
@@ -101,9 +134,9 @@ class AnkiCamera(object):
                             positionMessage = PositionUpdateMessage(-2, vertical_lane).toCsv()
                             try:
                                 print("INFO: Sending message " + positionMessage)
-                                self.client.send(positionMessage)
+                                self.adasClient.send(positionMessage)
                             except Exception:
-                                self.start_connection_timer()
+                                self.start_adas_connection_timer()
                                 print("ERROR: Message could not be sent.")
 
                             last_vertical_lane = vertical_lane
@@ -112,10 +145,22 @@ class AnkiCamera(object):
                     cv2.putText(frame, label, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
                     print(label)
 
+                    #write image to disk
+                    cv2.imwrite("capture.jpg", frame)
+                    with open("capture.jpg", "rb") as imageFile:
+                        base64Image = base64.b64encode(imageFile.read())
+                        try:
+                            print("INFO: Sending image as base64")
+                            self.twinClient.send(base64Image)
+                        except Exception:
+                            self.start_twin_connection_timer()
+                            print("ERROR: Image could not be sent")
+
+
                     if settings.enable_debug_images:
                         cv2.namedWindow('test', cv2.WINDOW_NORMAL)
                         cv2.imshow('test', frame)
-                        cv2.waitKey(10)
+                    cv2.waitKey(10)
                 else:
                     # If we could not initialize the camera after 100 frames, simply exit
                     count_failed_frames += 1
