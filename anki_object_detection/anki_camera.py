@@ -167,7 +167,8 @@ class AnkiCamera(object):
                     # If we could not initialize the camera after 100 frames, simply exit
                     count_failed_frames += 1
                     if count_failed_frames > 100:
-                        raise EnvironmentError("Could not init camera")
+                        print("ERROR: Could not init camera")
+                        self.terminate()
 
             # When everything done, release the capture
             video_capture.release()
