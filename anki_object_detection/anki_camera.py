@@ -89,8 +89,8 @@ class AnkiCamera(object):
             print("Running")
 
             video_capture = cv2.VideoCapture(self.cameraDeviceId)
-            video_capture.set(cv2.CV_CAP_PROP_FRAME_WIDTH,320)
-            video_capture.set(cv2.CV_CAP_PROP_FRAME_HEIGHT,240)
+            video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
+            video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
 
             cube_detector = CubeDetector(lower_color_range, upper_color_range)
             lane_detector = LaneDetector()
