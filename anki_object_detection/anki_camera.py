@@ -169,11 +169,11 @@ class AnkiCamera(object):
                     if count_failed_frames > 100:
                         print("ERROR: Could not init camera")
                         self.terminate()
-
+        finally:
             # When everything done, release the capture
             video_capture.release()
-            video_capture.destroyAllWindows()
-        finally:
+            cv2.destroyAllWindows()
+
             self.terminate()
 
     def terminate(self):
