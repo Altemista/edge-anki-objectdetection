@@ -7,3 +7,4 @@ def init():
         enable_debug_images = False
     else:
         enable_debug_images = True
+    print("INFO: enable_debug_images ", enable_debug_images)
