@@ -1,5 +1,5 @@
 {
-    "cameraDeviceId": 1,
+    "cameraDeviceId": 0,
 	"maxLeftLane": { "x1": 495, "x2": 466, "y1": 20, "y2": 975 },
 	"maxRightLane": { "x1": 833, "x2": 815, "y1": 33, "y2": 987 },
 	"maxHorizontalUpperLane": { "x1": 206, "x2": 1100, "y1": 300, "y2": 336 },
