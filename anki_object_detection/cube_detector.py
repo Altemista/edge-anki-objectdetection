@@ -14,11 +14,22 @@ class CubeDetector:
         self.lower_color_range = lower_color_range
         self.upper_color_range = upper_color_range
 
-    def detect(self, frame):
-        image_height, image_width, channels = frame.shape
+    def detect(self, frame, max_left_lane, max_right_lane, max_upper_lane, max_lower_lane):
+        cropped_vertical_image = frame[max_left_lane.y1:max_right_lane.y2, max_left_lane.x1:max_right_lane.x2]
+
+        cube_vertical = self.detect_in_area(cropped_vertical_image, frame, max_left_lane.x1, max_left_lane.y1)
+        if cube_vertical.x != 0 and cube_vertical.y != 0:
+            return Cube(cube_vertical.x + max_left_lane.x1, cube_vertical.y + max_left_lane.y1, cube_vertical.width, cube_vertical.height)
+        else:
+            cropped_horizontal_image = frame[max_upper_lane.y1:max_lower_lane.y2, max_upper_lane.x1:max_lower_lane.x2]
+            cube_horizontal = self.detect_in_area(cropped_horizontal_image, frame, max_upper_lane.x1, max_upper_lane.y1)
+            return Cube(cube_horizontal.x + max_upper_lane.x1, cube_horizontal.y + max_upper_lane.y1, cube_horizontal.width, cube_horizontal.width)
+
+    def detect_in_area(self, image, frame, offset_x, offset_y):
+        image_height, image_width, channels = image.shape
 
         # Convert BGR to HSV
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HLS)
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
 
         # Threshold the HSV image to get only blue colors
         mask = cv2.inRange(hsv, self.lower_color_range, self.upper_color_range)
@@ -37,12 +48,11 @@ class CubeDetector:
                 aspect_ratio = w / h
 
                 # Allow rectangles that have double height
-                if aspect_ratio < 1.2 and aspect_ratio >= 0.5:
-                    if w*h > biggest_contour_size:
-                        biggest_contour_size = w*h
-                        biggest_contour = cnt
+                if w*h > biggest_contour_size:
+                    biggest_contour_size = w*h
+                    biggest_contour = cnt
 
         x, y, w, h = cv2.boundingRect(biggest_contour)
 
-        cv2.drawContours(frame, contours, -1, (255, 255, 0), 3)
+        cv2.drawContours(frame, contours, -1, (255, 255, 0), 3, offset=(offset_x, offset_y))
         return Cube(x, y, w, h)

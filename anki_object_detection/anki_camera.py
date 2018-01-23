@@ -111,7 +111,7 @@ class AnkiCamera(object):
                     break
 
                 if frame is not None:
-                    cube = cube_detector.detect(frame)
+                    cube = cube_detector.detect(frame, max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane)
 
                     if cube.x != 0 and cube.y != 0:
                         horizontal_lane, vertical_lane = LaneCalculator.get_lane_for_cube(frame, cube, max_left_lane, max_right_lane,

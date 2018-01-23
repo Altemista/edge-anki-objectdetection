@@ -4,6 +4,6 @@
 	"maxRightLane": { "x1": 941, "x2": 955, "y1": 11, "y2": 1147 },
 	"maxHorizontalUpperLane": { "x1": 160, "x2": 1311, "y1": 377, "y2": 360 },
 	"maxHorizontalLowerLane": { "x1": 164, "x2": 1310, "y1": 809, "y2": 802 },
-	"lowerColorRange":  { "hue": 30, "saturation": 50, "luminance": 50 },
-	"upperColorRange": { "hue": 70, "saturation": 200, "luminance": 255}
+	"lowerColorRange":  { "hue": 30, "saturation": 40, "luminance": 30 },
+	"upperColorRange": { "hue": 75, "saturation": 200, "luminance": 200}
 }
