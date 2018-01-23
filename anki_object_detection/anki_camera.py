@@ -142,6 +142,20 @@ class AnkiCamera(object):
                                 print("ERROR: Message could not be sent.")
 
                             last_vertical_lane = vertical_lane
+                    else:
+
+                        try:
+                            positionMessage = PositionUpdateMessage(-1, -1).toCsv()
+                            print("INFO: Sending message " + positionMessage)
+                            self.adasClient.send(positionMessage)
+
+                            positionMessage = PositionUpdateMessage(-2, -1).toCsv()
+                            print("INFO: Sending message " + positionMessage)
+                            self.adasClient.send(positionMessage)
+                        except Exception:
+                            self.start_adas_connection_timer()
+                            print("ERROR: Message could not be sent.")
+
 
                     label = "Lane hor: " + str(last_horizontal_lane) + ", lane vert: " + str(last_vertical_lane)
                     cv2.putText(frame, label, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
