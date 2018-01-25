@@ -12,12 +12,14 @@ import sys
 import settings
 import signal
 import base64
-
+import atexit
+import traceback
 
 class AnkiCamera(object):
     def __init__(self, cameraDeviceId):
         self.adasClient = None
         self.twinClient = None
+        atexit.register(self.terminate)
 
         # init the websocket
         self.httpAdasWebsocket = os.environ.get('HTTP_WEBSOCKET')
@@ -88,9 +90,11 @@ class AnkiCamera(object):
         try:
             print("Running")
 
-            video_capture = cv2.VideoCapture(self.cameraDeviceId)
-            video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
-            video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
+            self.video_capture = cv2.VideoCapture(self.cameraDeviceId)
+            self.video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
+            self.video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 1200)
+
+            cv2.waitKey(5000)
 
             cube_detector = CubeDetector(lower_color_range, upper_color_range)
             lane_detector = LaneDetector()
@@ -102,7 +106,7 @@ class AnkiCamera(object):
 
             while(True):
                 # Capture frame-by-frame
-                ret, frame = video_capture.read()
+                ret, frame = self.video_capture.read()
                 count_failed_frames += 1
 
                 #frame = cv2.imread("anki_object_detection/images/cube_left_lane_1.jpg")
@@ -110,7 +114,7 @@ class AnkiCamera(object):
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
 
-                if frame is not None:
+                if ret:
                     cube = cube_detector.detect(frame, max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane)
 
                     if cube.x != 0 and cube.y != 0:
@@ -143,12 +147,13 @@ class AnkiCamera(object):
 
                             last_vertical_lane = vertical_lane
                     else:
-
                         try:
+                            last_horizontal_lane = -1
                             positionMessage = PositionUpdateMessage(-1, -1).toCsv()
                             print("INFO: Sending message " + positionMessage)
                             self.adasClient.send(positionMessage)
 
+                            last_vertical_lane = -1
                             positionMessage = PositionUpdateMessage(-2, -1).toCsv()
                             print("INFO: Sending message " + positionMessage)
                             self.adasClient.send(positionMessage)
@@ -161,8 +166,10 @@ class AnkiCamera(object):
                     cv2.putText(frame, label, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
                     print(label)
 
+                    #resize image
+                    resized_image = cv2.resize(frame, (800, 600))
                     #write image to disk
-                    cv2.imwrite("capture.jpg", frame)
+                    cv2.imwrite("capture.jpg", resized_image)
                     with open("capture.jpg", "rb") as imageFile:
                         base64Image = base64.b64encode(imageFile.read())
                         try:
@@ -184,9 +191,12 @@ class AnkiCamera(object):
                         print("ERROR: Could not init camera")
                         os.kill(os.getpid(), signal.SIGKILL)
                         sys.exit(0)
+        except:
+            print("Exception occurred")
+            traceback.print_exc(file=sys.stdout)
         finally:
             # When everything done, release the capture
-            video_capture.release()
+            self.video_capture.release()
             cv2.destroyAllWindows()
 
             self.terminate()

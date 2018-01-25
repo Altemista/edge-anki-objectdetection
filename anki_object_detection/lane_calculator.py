@@ -17,11 +17,12 @@ class LaneCalculator:
             laneNo = 4
 
         # print separator lanes
-        cv2.line(frame, (int(left_x), 50), (int(left_x), 100), (0, 255, 0), 5)
-        cv2.line(frame, (int(left_x+laneWidth), 50), (int(left_x+laneWidth), 100), (0, 255, 0), 5)
-        cv2.line(frame, (int(left_x+laneWidth*2), 50), (int(left_x+laneWidth*2), 100), (0, 255, 0), 5)
-        cv2.line(frame, (int(left_x+laneWidth*3), 50), (int(left_x+laneWidth*3), 100), (0, 255, 0), 5)
-        cv2.line(frame, (int(left_x+laneWidth*4), 50), (int(left_x+laneWidth*4), 100), (0, 255, 0), 5)
+        height, width, channels = frame.shape
+        cv2.line(frame, (int(left_x), 0), (int(left_x), width), (0, 255, 0), 2)
+        cv2.line(frame, (int(left_x+laneWidth), 50), (int(left_x+laneWidth), width), (0, 255, 0), 2)
+        cv2.line(frame, (int(left_x+laneWidth*2), 50), (int(left_x+laneWidth*2), width), (0, 255, 0), 2)
+        cv2.line(frame, (int(left_x+laneWidth*3), 50), (int(left_x+laneWidth*3), width), (0, 255, 0), 2)
+        cv2.line(frame, (int(left_x+laneWidth*4), 50), (int(left_x+laneWidth*4), width), (0, 255, 0), 2)
 
         return laneNo
 
@@ -39,11 +40,12 @@ class LaneCalculator:
             laneNo = 4
 
         # print separator lanes
-        cv2.line(frame, (0, int(upper_y)), (50, int(upper_y)), (0, 255, 0), 5)
-        cv2.line(frame, (0, int(upper_y+laneHeight)), (50, int(upper_y+laneHeight)), (0, 255, 0), 5)
-        cv2.line(frame, (0, int(upper_y+laneHeight*2)), (50, int(upper_y+laneHeight*2)), (0, 255, 0), 5)
-        cv2.line(frame, (0, int(upper_y+laneHeight*3)), (50, int(upper_y+laneHeight*3)), (0, 255, 0), 5)
-        cv2.line(frame, (0, int(upper_y+laneHeight*4)), (50, int(upper_y+laneHeight*4)), (0, 255, 0), 5)
+        height, width, channels = frame.shape
+        cv2.line(frame, (0, int(upper_y)), (height, int(upper_y)), (0, 255, 0), 2)
+        cv2.line(frame, (0, int(upper_y+laneHeight)), (height, int(upper_y+laneHeight)), (0, 255, 0), 2)
+        cv2.line(frame, (0, int(upper_y+laneHeight*2)), (height, int(upper_y+laneHeight*2)), (0, 255, 0), 2)
+        cv2.line(frame, (0, int(upper_y+laneHeight*3)), (height, int(upper_y+laneHeight*3)), (0, 255, 0), 2)
+        cv2.line(frame, (0, int(upper_y+laneHeight*4)), (height, int(upper_y+laneHeight*4)), (0, 255, 0), 2)
 
         return laneNo
 
