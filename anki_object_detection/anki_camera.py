@@ -149,21 +149,29 @@ class AnkiCamera(object):
                             last_vertical_lane = vertical_lane
                     else:
                         try:
-                            last_horizontal_lane = -1
-                            last_vertical_lane = -1
+                            horizontal_lane = -1
+                            vertical_lane = -1
 
-                            resetMessage = PositionUpdateMessage(1, -1);
-                            resetMessage.msgTimestamp = datetime.min.isoformat(timespec='milliseconds')+"Z";
-                            print("INFO: Sending message " + resetMessage.toCsv)
-                            self.adasClient.send(positionMessage)
+                            if horizontal_lane != last_horizontal_lane:
+                                resetMessage = PositionUpdateMessage(-1, -1);
+                                resetMessage.msgTimestamp = datetime.min.isoformat(timespec='milliseconds')+"Z";
+                                resetMessageCsv = resetMessage.toCsv()
+                                print("INFO: Sending message " + resetMessageCsv)
+                                self.adasClient.send(resetMessageCsv)
 
-                            resetMessage = PositionUpdateMessage(2, -1);
-                            resetMessage.msgTimestamp = datetime.min.isoformat(timespec='milliseconds')+"Z";
-                            print("INFO: Sending message " + resetMessage.toCsv)
-                            self.adasClient.send(positionMessage)
+                            if vertical_lane != last_vertical_lane:
+                                resetMessage = PositionUpdateMessage(-2, -1);
+                                resetMessage.msgTimestamp = datetime.min.isoformat(timespec='milliseconds')+"Z";
+                                resetMessageCsv = resetMessage.toCsv()
+                                print("INFO: Sending message " + resetMessageCsv)
+                                self.adasClient.send(resetMessageCsv)
+
+                            last_horizontal_lane = horizontal_lane
+                            last_vertical_lane = vertical_lane
                         except Exception:
                             self.start_adas_connection_timer()
                             print("ERROR: Message could not be sent.")
+                            traceback.print_exc(file=sys.stdout)
 
 
                     label = "Lane hor: " + str(last_horizontal_lane) + ", lane vert: " + str(last_vertical_lane)
