@@ -14,6 +14,7 @@ import signal
 import base64
 import atexit
 import traceback
+from datetime import datetime
 
 class AnkiCamera(object):
     def __init__(self, cameraDeviceId):
@@ -99,8 +100,8 @@ class AnkiCamera(object):
             cube_detector = CubeDetector(lower_color_range, upper_color_range)
             lane_detector = LaneDetector()
 
-            last_horizontal_lane = None
-            last_vertical_lane = None
+            last_horizontal_lane = -1
+            last_vertical_lane = -1
 
             count_failed_frames = 0
 
@@ -117,7 +118,7 @@ class AnkiCamera(object):
                 if ret:
                     cube = cube_detector.detect(frame, max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane)
 
-                    if cube.x != 0 and cube.y != 0:
+                    if cube.x != 0 and cube.y != 0 and cube.width != 0 and cube.height != 0:
                         horizontal_lane, vertical_lane = LaneCalculator.get_lane_for_cube(frame, cube, max_left_lane, max_right_lane,
                                                                                           max_horizontal_upper_lane, max_horizontal_lower_lane)
 
@@ -149,13 +150,16 @@ class AnkiCamera(object):
                     else:
                         try:
                             last_horizontal_lane = -1
-                            positionMessage = PositionUpdateMessage(-1, -1).toCsv()
-                            print("INFO: Sending message " + positionMessage)
+                            last_vertical_lane = -1
+
+                            resetMessage = PositionUpdateMessage(1, -1);
+                            resetMessage.msgTimestamp = datetime.min.isoformat(timespec='milliseconds')+"Z";
+                            print("INFO: Sending message " + resetMessage.toCsv)
                             self.adasClient.send(positionMessage)
 
-                            last_vertical_lane = -1
-                            positionMessage = PositionUpdateMessage(-2, -1).toCsv()
-                            print("INFO: Sending message " + positionMessage)
+                            resetMessage = PositionUpdateMessage(2, -1);
+                            resetMessage.msgTimestamp = datetime.min.isoformat(timespec='milliseconds')+"Z";
+                            print("INFO: Sending message " + resetMessage.toCsv)
                             self.adasClient.send(positionMessage)
                         except Exception:
                             self.start_adas_connection_timer()
