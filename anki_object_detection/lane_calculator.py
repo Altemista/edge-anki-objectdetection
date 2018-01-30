@@ -61,7 +61,7 @@ class LaneCalculator:
             mean_left_x = (max_left_lane.x1+max_left_lane.x2)/2
 
             # Cube.y is upper corner
-            cube_y = cube.y + cube.height
+            cube_y = cube.y + cube.height / 2
             cube_x = cube.x + cube.width / 2
 
             # A crossing can be split into 5 parts

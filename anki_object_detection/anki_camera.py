@@ -97,7 +97,7 @@ class AnkiCamera(object):
 
             cv2.waitKey(5000)
 
-            cube_detector = CubeDetector(lower_color_range, upper_color_range)
+            cube_detector = CubeDetector()
             lane_detector = LaneDetector()
 
             last_horizontal_lane = -1
@@ -111,12 +111,31 @@ class AnkiCamera(object):
                 count_failed_frames += 1
 
                 #frame = cv2.imread("anki_object_detection/images/cube_left_lane_1.jpg")
-
-                if cv2.waitKey(1) & 0xFF == ord('q'):
+                keyInput = cv2.waitKey(1)
+                if keyInput == ord('q'):
                     break
+                elif keyInput == ord('w'):
+                    lower_color_range[0] += 5
+                    print("Lower hue set to ", lower_color_range[0])
+                elif keyInput == ord('s'):
+                    lower_color_range[0] -= 5
+                    print("Lower hue set to ", lower_color_range[0])
+                elif keyInput == ord('e'):
+                    lower_color_range[1] += 5
+                    print("Lower saturation set to ", lower_color_range[1])
+                elif keyInput == ord('d'):
+                    lower_color_range[1] -= 5
+                    print("Lower saturation set to ", lower_color_range[1])
+                elif keyInput == ord('r'):
+                    lower_color_range[2] += 5
+                    print("Lower luminance set to ", lower_color_range[2])
+                elif keyInput == ord('f'):
+                    lower_color_range[2] -= 5
+                    print("Lower luminance set to ", lower_color_range[2])
 
                 if ret:
-                    cube = cube_detector.detect(frame, max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane)
+                    cube = cube_detector.detect(frame, max_left_lane, max_right_lane, max_horizontal_upper_lane, max_horizontal_lower_lane,
+                                                lower_color_range, upper_color_range)
 
                     if cube.x != 0 and cube.y != 0 and cube.width != 0 and cube.height != 0:
                         horizontal_lane, vertical_lane = LaneCalculator.get_lane_for_cube(frame, cube, max_left_lane, max_right_lane,
@@ -177,6 +196,13 @@ class AnkiCamera(object):
                     label = "Lane hor: " + str(last_horizontal_lane) + ", lane vert: " + str(last_vertical_lane)
                     cv2.putText(frame, label, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)
                     print(label)
+
+                    #Send hsv contrast image instead of real image
+                    #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HLS)
+                    #frame = cv2.inRange(frame, lower_color_range, upper_color_range)
+
+                    #colorRangeLabel = "h: " + str(lower_color_range[0]) + ", s " + str(lower_color_range[1]) + ", v " + str(lower_color_range[2])
+                    #cv2.putText(frame, colorRangeLabel, (50, 1000), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (80, 255, 0), 2, cv2.LINE_AA)
 
                     #resize image
                     resized_image = cv2.resize(frame, (800, 600))
