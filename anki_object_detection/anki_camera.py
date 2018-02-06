@@ -168,6 +168,7 @@ class AnkiCamera(object):
                             last_vertical_lane = vertical_lane
                     else:
                         try:
+                            # No cube detected reset position
                             horizontal_lane = -1
                             vertical_lane = -1
 
@@ -192,6 +193,12 @@ class AnkiCamera(object):
                             print("ERROR: Message could not be sent.")
                             traceback.print_exc(file=sys.stdout)
 
+
+                    # print configured lanes
+                    cv2.line(frame, (max_left_lane.x1, max_left_lane.y1), (max_left_lane.x2, max_left_lane.y2), (255, 0, 0), 5)
+                    cv2.line(frame, (max_right_lane.x1, max_right_lane.y1), (max_right_lane.x2, max_right_lane.y2), (255, 0, 0), 5)
+                    cv2.line(frame, (max_horizontal_upper_lane.x1, max_horizontal_upper_lane.y1), (max_horizontal_upper_lane.x2, max_horizontal_upper_lane.y2), (255, 0, 0), 5)
+                    cv2.line(frame, (max_horizontal_lower_lane.x1, max_horizontal_lower_lane.y1), (max_horizontal_lower_lane.x2, max_horizontal_lower_lane.y2), (255, 0, 0), 5)
 
                     label = "Lane hor: " + str(last_horizontal_lane) + ", lane vert: " + str(last_vertical_lane)
                     cv2.putText(frame, label, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2, cv2.LINE_AA)

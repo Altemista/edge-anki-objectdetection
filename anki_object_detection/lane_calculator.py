@@ -90,11 +90,5 @@ class LaneCalculator:
                 vertical_lane = LaneCalculator._calculate_vertical_lane(mean_left_x, mean_right_x, cube.x+cube.width/2, frame)
                 horizontal_lane = LaneCalculator._calculate_horizontal_lane(mean_upper_y, mean_lower_y, cube_y, frame)
 
-            # print lanes
-            cv2.line(frame, (max_left_lane.x1, max_left_lane.y1), (max_left_lane.x2, max_left_lane.y2), (255, 0, 0), 5)
-            cv2.line(frame, (max_right_lane.x1, max_right_lane.y1), (max_right_lane.x2, max_right_lane.y2), (255, 0, 0), 5)
-            cv2.line(frame, (max_horizontal_upper_lane.x1, max_horizontal_upper_lane.y1), (max_horizontal_upper_lane.x2, max_horizontal_upper_lane.y2), (255, 0, 0), 5)
-            cv2.line(frame, (max_horizontal_lower_lane.x1, max_horizontal_lower_lane.y1), (max_horizontal_lower_lane.x2, max_horizontal_lower_lane.y2), (255, 0, 0), 5)
-
             return vertical_lane, horizontal_lane
         return -1
